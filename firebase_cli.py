@@ -43,18 +43,50 @@ def read():
     print(anime)
 
 
+def update():
+    _id = input("Entrer l'id de l'animé :")
+    title = input("Entrer le nouveau titre :")
+    release_date = input("Entrer la nouvelle date de sortie de l'animé (yyyy-mm-dd) :")
+    episodes = int(input("Entrer le nouveau nombre d'épisodes :"))
+    author = input("Entrer le nouveau nom de l'autheur :")
+    cover = input("Entrer le nouveau lien du cover :")
+    trailer = input("Entrer le nouveau lien du trailer :")
+    update_data = {
+        "title": title,
+        "release_date": release_date,
+        "episodes": episodes,
+        "author": author,
+        "cover": cover,
+        "trailer": trailer,
+    }
+    storage.child("animes").child(_id).update(update_data)
+    print("Mise à jour avec success !")
+
+
+def delete():
+    _id = input("Entrer l'id pour supprimer :")
+    storage.child("animes").child(_id).remove()
+    print("Supprimé avec succès")
+
+
 def menu():
     while True :
         print("Option :")
         print("Entrer 1 pour ajouter un animé ")
         print("Entrer 2 pour voir les animés existant")
-        print("Entrer 3 pour quitter")
+        print("Entrer 3 pour une mise à jour ")
+        print("Entrer 4 pour supprimer")
+        print("Entrer 5 pour quitter")
         option = int(input("choisissez une option :"))
         if option == 1 :
             create()
         elif option == 2 :
             read()
-        elif option == 3:
+        elif option == 3 :
+            update()
+        elif option == 4 :
+            delete()
+        elif option == 5:
             print("Astala vista ...")
             break
         else:
