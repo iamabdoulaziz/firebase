@@ -1,3 +1,6 @@
+import json
+from math import expm1
+
 import pyrebase
 import uuid
 
@@ -21,7 +24,11 @@ def create():
     _id = str(uuid.uuid4())
     title = input("Entrer le nom de l'animé :")
     release_date = input("Entrer la date de sortie de l'animé (yyyy-mm-dd) :")
-    episodes = int(input("Entrer le nombre d'épisodes :"))
+    episodes = input("Entrer le nombre d'épisodes :")
+
+    while not verify_integer(episodes):
+        episodes = input("Entrer le nombre d'épisodes :")
+
     author = input("Entrer le nom de l'autheur :")
     cover = input("Entrer le lien du cover :")
     trailer = input("Entrer le lien du trailer :")
@@ -32,15 +39,28 @@ def create():
         "episodes": episodes,
         "author": author,
         "cover": cover,
-        "trailer": trailer
+        "trailer": trailer,
     }
     storage.child("animes").child(_id).set(data)
     print("Ajouter avec succès !")
 
 
 def read():
-    anime = storage.child("animes").get().val()
-    print(anime)
+    animes = storage.child("animes").get().val()
+
+    for anime in animes:
+        print(33*"#")
+        print(anime)
+
+        print(
+            json.dumps(
+                storage.child('animes').child(anime).get().val(),
+                indent=4
+            )
+        )
+        print(33*"#")
+        print("\n")
+
 
 
 def update():
@@ -51,6 +71,7 @@ def update():
     author = input("Entrer le nouveau nom de l'autheur :")
     cover = input("Entrer le nouveau lien du cover :")
     trailer = input("Entrer le nouveau lien du trailer :")
+
     update_data = {
         "title": title,
         "release_date": release_date,
@@ -59,6 +80,11 @@ def update():
         "cover": cover,
         "trailer": trailer,
     }
+
+    for i in [j for j in update_data.keys()]:
+        if not update_data[i]:
+            del update_data[i]
+
     storage.child("animes").child(_id).update(update_data)
     print("Mise à jour avec success !")
 
@@ -77,20 +103,30 @@ def menu():
         print("Entrer 3 pour une mise à jour ")
         print("Entrer 4 pour supprimer")
         print("Entrer 5 pour quitter")
-        option = int(input("choisissez une option :"))
-        if option == 1 :
+
+        option = input("choisissez une option : ")
+
+        if option == "1":
             create()
-        elif option == 2 :
+        elif option == "2":
             read()
-        elif option == 3 :
+        elif option == "3":
             update()
-        elif option == 4 :
+        elif option == "4":
             delete()
-        elif option == 5:
+        elif option == "5":
             print("Astala vista ...")
             break
         else:
             print("Option non disponible")
 
+
+def verify_integer(_input):
+    try:
+        return int(_input)
+
+    except Exception:
+        print(">>> ALERT : Tu dois utiliser un chiffre ou un nombre.")
+        return False
 
 menu()
